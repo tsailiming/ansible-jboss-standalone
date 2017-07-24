@@ -1,0 +1,7 @@
+repo_url: "https://artifactory.lab.ltsai.com/artifactory/web"
+
+required_packages:
+  - rsync
+  - unzip
+  - firewalld
+

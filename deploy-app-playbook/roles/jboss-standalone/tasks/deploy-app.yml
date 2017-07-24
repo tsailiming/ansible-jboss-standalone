@@ -1,0 +1,17 @@
+---
+# create a new standalone folder structure
+
+- name: Create new application directory structure
+  file:
+    path: "{{ jboss_eap_home }}/{{ application_id }}/deployments"
+    state: directory
+
+# standalone*.xml excluded
+- name: Copy contents over from template directory
+  command: rsync -avzr "{{ jboss_eap_home }}/standalone/" "{{ jboss_eap_home }}/{{ application_id }}/" "--exclude=configuration/*.xml"
+  
+- name: Pull file from repo based on app name and version
+  get_url:
+    url: "{{ repo_url}}/{{ application_id }}/{{ application_version }}/{{ application_id }}.war"
+    dest: "{{ jboss_eap_home }}/{{ application_id }}/deployments/{{ application_id }}.war"
+    validate_certs: False  

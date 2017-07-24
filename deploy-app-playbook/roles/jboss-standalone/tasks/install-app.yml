@@ -1,0 +1,38 @@
+---
+- name: Install openjdk 1.8
+  yum: name=java-1.8.0-openjdk.x86_64 state=present
+
+- name: Download JBOSS EAP
+  get_url:
+    url: "{{ repo_url }}/{{ application_id }}/{{ application_version }}/{{ eap_file }}"
+    dest: "/tmp/{{ eap_file }}"
+    validate_certs: False
+    
+- name: Unzip JBOSS EAP
+  unarchive:
+    src: "/tmp/{{ eap_file }}"
+    dest: "{{ jboss_eap_home | dirname }}" # Because EAP zip contains a container/top-level folder
+    remote_src: yes
+    
+- name: Add group "jboss"
+  group: name={{ jboss_user }}
+
+- name: Add user "jboss"
+  user: name={{ jboss_user }} group={{ jboss_user }} home={{ jboss_eap_home }}
+
+- name: Change ownership of JBoss installation
+  file: path={{ jboss_eap_home }} owner={{ jboss_user }} group={{ jboss_user }} state=directory recurse=yes
+
+- name: Copy the init script
+  copy: src=jboss-as-standalone.sh dest=/etc/init.d/jboss mode=0755
+
+- name: Create jboss conf directory
+  file: path="{{ jboss_conf | dirname }}" state=directory
+
+- name: Copy the jboss conf file
+  template:
+    src: jboss-as.conf.tmpl
+    dest: "{{ jboss_conf }}"
+
+- name: Disable firewalld
+  service: name=firewalld state=stopped enabled=no

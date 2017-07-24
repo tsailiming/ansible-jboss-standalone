@@ -1,0 +1,5 @@
+eap_file: jboss-eap-7.0.0.zip
+application_configuration: standalone.xml
+jboss_eap_home: /opt/jboss-eap-7.0
+jboss_user: jboss
+jboss_conf: /etc/jboss-as/jboss-as.conf
